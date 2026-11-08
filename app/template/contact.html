@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Contact Us - SleepCheck{% endblock %}
+
+{% block content %}
+{% set team = [
+    {"nama": "Nama Anggota 1", "nim": "NIM 1", "peran": "Fondasi dan Model (repo, database, integrasi model AI)"},
+    {"nama": "Nama Anggota 2", "nim": "NIM 2", "peran": "Fitur Prediksi (Create)"},
+    {"nama": "Nama Anggota 3", "nim": "NIM 3", "peran": "Fitur Riwayat (Read dan Delete)"},
+    {"nama": "Nama Anggota 4", "nim": "NIM 4", "peran": "Halaman Informasi (Home, Contact Us, layout)"},
+] %}
+
+<section>
+    <h1>Contact Us</h1>
+    <p>SleepCheck dibuat oleh kelompok kami sebagai tugas UAS Pemrograman Web Framework Python. Model AI (KNN dan Random Forest) dikerjakan bersama oleh seluruh anggota.</p>
+</section>
+
+<section>
+    <h2>Anggota Kelompok</h2>
+    <div class="grid grid-2">
+        {% for m in team %}
+        <div class="card">
+            <h3>{{ m.nama }}</h3>
+            <p class="muted">{{ m.nim }}</p>
+            <p>{{ m.peran }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section>
+    <h2>Teknologi yang Digunakan</h2>
+    <p>FastAPI, Jinja2, HTML, CSS, JavaScript, PostgreSQL, SQLAlchemy, dan scikit-learn.</p>
+</section>
+{% endblock %}
