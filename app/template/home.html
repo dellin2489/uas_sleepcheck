@@ -4,14 +4,14 @@
 {% block content %}
 <section class="hero">
     <h1>SleepCheck</h1>
-    <p>Alat screening mandiri untuk memprediksi risiko gangguan tidur dari kebiasaan sehari-hari, lengkap dengan rekomendasi perubahan gaya hidup.</p>
+    <p>Alat screening mandiri untuk memprediksi risiko gangguan tidur dari kebiasaan sehari-hari dan kondisi tubuh.</p>
     <a class="btn" href="/predict">Mulai Prediksi</a>
 </section>
 
 <section>
     <h2>Tujuan Website</h2>
-    <p>Kualitas tidur adalah salah satu pilar kesehatan, tetapi banyak orang tidak menyadari hubungan antara kebiasaan harian (tingkat stres, aktivitas fisik, langkah harian, BMI, tekanan darah) dengan kualitas tidur mereka. Pemeriksaan klinis juga sering bukan langkah pertama karena kendala biaya atau waktu.</p>
-    <p>SleepCheck dibuat sebagai sistem deteksi dini berbasis web. Pengguna mengisi data, sistem memprediksi jenis gangguan tidur dan mengestimasi skor kualitas tidur, lalu hasilnya disimpan sebagai riwayat yang bisa dilihat dan dihapus kembali.</p>
+    <p>Kualitas tidur adalah salah satu pilar kesehatan, tetapi banyak orang tidak menyadari hubungan antara kebiasaan harian (durasi tidur, tingkat stres, aktivitas fisik, langkah harian, BMI, tekanan darah) dengan gangguan tidur seperti insomnia dan sleep apnea. Pemeriksaan klinis juga sering bukan langkah pertama karena kendala biaya atau waktu.</p>
+    <p>SleepCheck dibuat sebagai sistem deteksi dini berbasis web. Pengguna mengisi data, sistem memprediksi jenis gangguan tidur beserta tingkat keyakinannya, lalu hasilnya disimpan sebagai riwayat yang bisa dilihat dan dihapus kembali.</p>
 </section>
 
 <section>
@@ -19,15 +19,15 @@
     <div class="grid grid-3">
         <div class="card">
             <h3>1. Isi data</h3>
-            <p>Umur, gender, BMI, tekanan darah, detak jantung, langkah harian, aktivitas fisik, dan tingkat stres.</p>
+            <p>Umur, gender, BMI, durasi tidur, tekanan darah, detak jantung, langkah harian, aktivitas fisik, dan tingkat stres.</p>
         </div>
         <div class="card">
-            <h3>2. Analisis AI</h3>
-            <p>KNN memprediksi jenis gangguan tidur, Random Forest mengestimasi skor kualitas tidur.</p>
+            <h3>2. Analisis KNN</h3>
+            <p>Algoritma K-Nearest Neighbors membandingkan data Anda dengan data yang paling mirip di dataset.</p>
         </div>
         <div class="card">
             <h3>3. Lihat hasil</h3>
-            <p>Prediksi, tingkat keyakinan, dan rekomendasi kebiasaan yang berpotensi meningkatkan kualitas tidur.</p>
+            <p>Prediksi None, Insomnia, atau Sleep Apnea beserta persentase keyakinan tiap kelas.</p>
         </div>
     </div>
 </section>
@@ -38,9 +38,8 @@
     <table>
         <tr><th>Aspek</th><th>Keterangan</th></tr>
         <tr><td>Target klasifikasi (KNN)</td><td>Sleep Disorder: None (73), Sleep Apnea (30), Insomnia (29)</td></tr>
-        <tr><td>Target regresi (Random Forest)</td><td>Quality of Sleep, skala 4 sampai 9</td></tr>
-        <tr><td>Fitur yang dipakai</td><td>Age, Gender, BMI Category, Physical Activity Level, Stress Level, Heart Rate, Daily Steps, Systolic, Diastolic</td></tr>
-        <tr><td>Fitur yang tidak dipakai</td><td>Sleep Duration, agar prediksi murni berbasis gaya hidup, bukan gejala tidurnya</td></tr>
+        <tr><td>Fitur yang dipakai</td><td>Age, Gender, BMI Category, Sleep Duration, Physical Activity Level, Stress Level, Heart Rate, Daily Steps, Systolic, Diastolic</td></tr>
+        <tr><td>Fitur yang tidak dipakai</td><td>Quality of Sleep, karena sangat berkaitan dengan hasil dan berpotensi membocorkan jawaban, serta Person ID</td></tr>
     </table>
     <h3>Preprocessing</h3>
     <ul>
@@ -57,28 +56,26 @@
         <div class="card">
             <h3>K-Nearest Neighbors (KNN)</h3>
             <p><strong>Tugas:</strong> klasifikasi multikelas, memprediksi None, Insomnia, atau Sleep Apnea.</p>
-            <p><strong>Cara kerja:</strong> membandingkan data pengguna dengan data paling mirip (tetangga terdekat) dan mengambil kelas terbanyak di antara mereka. Karena berbasis jarak, fitur angka diskalakan lebih dulu.</p>
-            <p><strong>Parameter terbaik:</strong> k = 9, jarak manhattan, bobot uniform (hasil GridSearchCV).</p>
-            <p><strong>Evaluasi:</strong> F1-macro nested cross-validation sekitar 0,64 dan akurasi data uji sekitar 0,67.</p>
+            <p><strong>Cara kerja:</strong> membandingkan data pengguna dengan sejumlah data paling mirip (tetangga terdekat) dan mengambil kelas yang paling banyak di antara mereka. Karena berbasis jarak, fitur angka diskalakan lebih dulu.</p>
+            <p><strong>Parameter terbaik:</strong> k = 7, jarak manhattan, bobot uniform (hasil GridSearchCV).</p>
         </div>
         <div class="card">
-            <h3>Random Forest</h3>
-            <p><strong>Tugas:</strong> regresi, mengestimasi skor kualitas tidur (skala 4 sampai 9).</p>
-            <p><strong>Cara kerja:</strong> gabungan banyak pohon keputusan yang masing-masing dilatih dari sampel data dan fitur yang diacak, lalu hasilnya dirata-rata.</p>
-            <p><strong>Evaluasi:</strong> R<sup>2</sup> cross-validation sekitar 0,89, R<sup>2</sup> data uji sekitar 0,94, dan MAE sekitar 0,09.</p>
-            <p><strong>Faktor paling berpengaruh:</strong> tingkat stres (sekitar 0,72), disusul umur, langkah harian, dan detak jantung.</p>
+            <h3>Evaluasi Model</h3>
+            <p><strong>Metode:</strong> nested cross-validation untuk angka utama, ditambah pengujian pada data uji terpisah.</p>
+            <p><strong>Hasil:</strong> F1-macro nested cross-validation sekitar 0,66 dan akurasi data uji sekitar 0,70.</p>
+            <p><strong>Metrik lain:</strong> precision, recall, dan F1 per kelas, serta confusion matrix.</p>
         </div>
     </div>
 
-    <h3>Cara Kerja Rekomendasi</h3>
-    <p>KNN dan Random Forest adalah dua model terpisah yang memakai data pengguna yang sama. Untuk rekomendasi, sistem mencoba perubahan kecil pada kebiasaan yang realistis diubah (tambah 0 sampai 3.000 langkah, tambah 0 sampai 30 menit aktivitas fisik, turunkan stres 0 sampai 3 poin), lalu menanyakan estimasi skornya ke Random Forest. Satu skenario terbaik dari tiap jenis ditampilkan sebagai kartu rekomendasi, dan KNN dijalankan lagi untuk melihat apakah prediksi gangguannya berubah.</p>
+    <h3>Cara Membaca Hasil</h3>
+    <p>Selain label prediksi, sistem menampilkan persentase keyakinan untuk tiap kelas. Persentase ini berasal dari proporsi tetangga terdekat di tiap kelas. Semakin tinggi persentasenya, semakin banyak data mirip yang memiliki kelas tersebut.</p>
 </section>
 
 <section class="notice">
     <h2>Keterbatasan dan Disclaimer</h2>
     <ul>
-        <li>Data berukuran kecil, sehingga performa model berlaku untuk dataset ini dan belum tentu sama pada data dunia nyata.</li>
-        <li>Rekomendasi adalah prediksi berdasarkan pola data (korelasi), bukan jaminan sebab-akibat.</li>
+        <li>Data berukuran kecil, sehingga performa model berlaku untuk dataset ini dan belum tentu sama pada data dunia nyata. Kelas dengan data lebih sedikit lebih sulit diprediksi.</li>
+        <li>Hasil prediksi adalah perkiraan berdasarkan pola data, bukan kepastian.</li>
         <li>SleepCheck adalah alat screening awal dan <strong>bukan pengganti diagnosis dokter</strong>. Konsultasikan dengan tenaga kesehatan jika mengalami gangguan tidur.</li>
     </ul>
 </section>

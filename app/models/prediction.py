@@ -12,21 +12,19 @@ class Prediction(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nama: str = Field(max_length=100)
 
-    age: int
-    gender: str = Field(max_length=10)
-    bmi_category: str = Field(max_length=20)
-    physical_activity: int
-    stress_level: int
-    heart_rate: int
-    daily_steps: int
-    systolic: int
-    diastolic: int
+    age = Column(Integer, nullable=False)
+    gender = Column(String(10), nullable=False)
+    bmi_category = Column(String(20), nullable=False)
+    physical_activity = Column(Integer, nullable=False)
+    stress_level = Column(Integer, nullable=False)
+    heart_rate = Column(Integer, nullable=False)
+    daily_steps = Column(Integer, nullable=False)
+    systolic = Column(Integer, nullable=False)
+    diastolic = Column(Integer, nullable=False)
 
-    knn_label: str = Field(max_length=20)
-    knn_proba: dict = Field(sa_column=Column(JSONB, nullable=False))
-    rf_score: float = Field(sa_column=Column(Numeric(4, 2, asdecimal=False), nullable=False))
-    recommendations: list = Field(sa_column=Column(JSONB, nullable=False))
+    knn_label = Column(String(20), nullable=False)
+    knn_proba = Column(JSONB, nullable=False)
+    rf_score = Column(Numeric(4, 2), nullable=False)
+    recommendations = Column(JSONB, nullable=False)
 
-    created_at: Optional[datetime] = Field(
-        default=None, sa_column_kwargs={"server_default": func.now()}
-    )
+    created_at = Column(DateTime, server_default=func.now())
