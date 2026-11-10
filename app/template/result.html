@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Prediksi{% endblock %}
+
+{% block content %}
+
+<section class="result-page">
+
+    <div class="card">
+
+        <h1>Hasil Prediksi</h1>
+
+
+        {% if error %}
+
+            <div class="error-box">
+                <p>{{ error }}</p>
+            </div>
+
+        {% else %}
+
+            <h2>Data Input</h2>
+
+            <div class="result-data">
+
+                <p>
+                    <strong>Nama</strong>
+                    : {{ item.nama }}
+                </p>
+
+                <p>
+                    <strong>Age</strong>
+                    : {{ item.age }}
+                </p>
+
+                <p>
+                    <strong>Gender</strong>
+                    : {{ item.gender }}
+                </p>
+
+                <p>
+                    <strong>BMI Category</strong>
+                    : {{ item.bmi_category }}
+                </p>
+
+                <p>
+                    <strong>Sleep Duration</strong>
+                    : {{ item.sleep_duration }} jam
+                </p>
+
+                <p>
+                    <strong>Physical Activity</strong>
+                    : {{ item.physical_activity }} menit/hari
+                </p>
+
+                <p>
+                    <strong>Stress Level</strong>
+                    : {{ item.stress_level }}
+                </p>
+
+                <p>
+                    <strong>Heart Rate</strong>
+                    : {{ item.heart_rate }} bpm
+                </p>
+
+                <p>
+                    <strong>Daily Steps</strong>
+                    : {{ item.daily_steps }}
+                </p>
+
+                <p>
+                    <strong>Systolic</strong>
+                    : {{ item.systolic }}
+                </p>
+
+                <p>
+                    <strong>Diastolic</strong>
+                    : {{ item.diastolic }}
+                </p>
+
+            </div>
+
+            <hr>
+
+            <h2>Hasil Prediksi KNN</h2>
+
+            <div class="prediction-main">
+
+                <span class="badge badge-{{ item.knn_label|lower|replace(' ', '-') }}">
+                    {{ item.knn_label }}
+                </span>
+
+            </div>
+
+
+            {% if item.knn_proba %}
+
+            <div class="probability">
+
+                <h3>Probabilitas</h3>
+
+                {% for label, probability in item.knn_proba.items() %}
+
+                <p>
+                    <strong>{{ label }}</strong>
+                    : {{ '%.2f'|format(probability * 100) }}%
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+            <div class="result-note">
+
+                <p>
+                    Hasil ini merupakan screening awal berdasarkan
+                    model KNN dan bukan diagnosis medis.
+                </p>
+
+            </div>
+
+            <div class="result-actions">
+
+                <a
+                    href="/predict"
+                    class="btn"
+                >
+                    Kembali ke Prediksi
+                </a>
+
+                <a
+                    href="/history"
+                    class="btn"
+                >
+                    Riwayat
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
