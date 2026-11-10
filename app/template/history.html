@@ -1,59 +1,183 @@
 {% extends "base.html" %}
 
+{% block title %}Riwayat Prediksi{% endblock %}
+
 {% block content %}
+
 <section class="history-page">
-  <h1>Riwayat Prediksi</h1>
-  <p class="history-sub">Semua hasil screening yang pernah disimpan. Hasil ini hanya alat screening awal, bukan diagnosis medis.</p>
 
-  {% if items %}
-  <div class="history-tools">
-    <input type="text" id="cari-nama" placeholder="Cari nama..." autocomplete="off">
-    <span id="jumlah-data">{{ items|length }} data</span>
-  </div>
+    <h1>Riwayat Prediksi</h1>
 
-  <div class="table-wrap">
-    <table class="history-table">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama</th>
-          <th>Tanggal</th>
-          <th>Prediksi KNN</th>
-          <th>Skor Tidur</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in items %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td class="kolom-nama">{{ item.nama }}</td>
-          <td>{{ item.created_at.strftime('%d %b %Y, %H:%M') if item.created_at else '-' }}</td>
-          <td><span class="badge badge-{{ item.knn_label|lower|replace(' ', '-') }}">{{ item.knn_label }}</span></td>
-          <td>{{ '%.2f'|format(item.rf_score|float) }}</td>
-          <td class="kolom-aksi">
-            <a href="/history/{{ item.id }}" class="btn">Detail</a>
-            <form method="post" action="/history/{{ item.id }}/delete"
-                  class="form-hapus" data-nama="{{ item.nama }}" style="display:inline;">
-              <button type="submit" class="btn btn-danger">Hapus</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <p id="tidak-ditemukan" class="empty-state" style="display:none;">Tidak ada nama yang cocok.</p>
+    <p class="history-sub">
+        Semua hasil screening yang pernah disimpan.
+        Hasil ini hanya alat screening awal, bukan diagnosis medis.
+    </p>
 
-  {% else %}
-  <div class="empty-state">
-    <p>Belum ada riwayat prediksi.</p>
-    <a href="/predict" class="btn">Coba prediksi pertamamu</a>
-  </div>
-  {% endif %}
+
+    {% if items %}
+
+    <div class="history-tools">
+
+        <input
+            type="text"
+            id="cari-tanggal"
+            placeholder="Cari tanggal..."
+            autocomplete="off"
+        >
+
+        <span id="jumlah-data">
+            {{ items|length }} data
+        </span>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+        <table class="history-table">
+
+            <thead>
+
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Prediksi KNN</th>
+                    <th>Probabilitas</th>
+                    <th>Aksi</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in items %}
+
+                <tr>
+
+                    <!-- Nomor -->
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+
+                    <!-- Tanggal -->
+                    <td class="kolom-tanggal">
+
+                        {{ item.created_at.strftime('%d %b %Y, %H:%M')
+                           if item.created_at else '-' }}
+
+                    </td>
+
+
+                    <!-- Hasil Prediksi KNN -->
+                    <td>
+
+                        <span
+                            class="badge badge-{{ item.knn_label|lower|replace(' ', '-') }}"
+                        >
+                            {{ item.knn_label }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- Probabilitas -->
+                    <td>
+
+                        {% if item.knn_proba %}
+
+                            {% set max_proba = item.knn_proba.values()|max %}
+
+                            {{ '%.2f'|format(max_proba * 100) }}%
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- Aksi -->
+                    <td class="kolom-aksi">
+
+                        <a
+                            href="/history/{{ item.id }}"
+                            class="btn"
+                        >
+                            Detail
+                        </a>
+
+
+                        <form
+                            method="post"
+                            action="/history/{{ item.id }}/delete"
+                            class="form-hapus"
+                            data-tanggal="{{ item.created_at.strftime('%d %b %Y, %H:%M') if item.created_at else '-' }}"
+                            style="display:inline;"
+                        >
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger"
+                            >
+                                Hapus
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- Jika pencarian tidak menemukan data -->
+    <p
+        id="tidak-ditemukan"
+        class="empty-state"
+        style="display:none;"
+    >
+        Tidak ada tanggal yang cocok.
+    </p>
+
+
+    {% else %}
+
+    <!-- Jika belum ada data -->
+    <div class="empty-state">
+
+        <p>
+            Belum ada riwayat prediksi.
+        </p>
+
+        <a
+            href="/predict"
+            class="btn"
+        >
+            Coba prediksi pertamamu
+        </a>
+
+    </div>
+
+    {% endif %}
+
 </section>
+
 {% endblock %}
 
+
 {% block scripts %}
+
 <script src="/static/history.js"></script>
+
 {% endblock %}
