@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Panduan Pengisian - SleepCheck{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Panduan Pengisian</h1>
+    <p>Halaman ini menjelaskan arti tiap kolom di form prediksi dan cara mengisinya, supaya hasil prediksi lebih sesuai dengan kondisi Anda.</p>
+    <a class="btn" href="/predict">Langsung ke Form Prediksi</a>
+</section>
+
+<section>
+    <h2>Sebelum Mulai</h2>
+    <ul>
+        <li>Semua kolom wajib diisi.</li>
+        <li>Untuk kebiasaan harian (tidur, aktivitas, langkah, stres), isi dengan <strong>rata-rata seminggu terakhir</strong>, bukan satu hari yang tidak biasa.</li>
+        <li>Untuk angka desimal gunakan titik, misalnya <strong>6.5</strong> jam.</li>
+        <li>Isi angka yang sebenarnya. Angka yang terlalu jauh dari kenyataan membuat hasil tidak berarti.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Penjelasan Tiap Kolom</h2>
+    <table>
+        <tr><th>Kolom</th><th>Artinya</th><th>Cara mengisi</th><th>Rentang</th></tr>
+        <tr><td>Nama</td><td>Penanda data Anda di halaman Riwayat</td><td>Boleh nama panggilan</td><td>2 sampai 100 karakter</td></tr>
+        <tr><td>Umur</td><td>Usia Anda saat ini</td><td>Dalam tahun</td><td>10 sampai 100</td></tr>
+        <tr><td>Jenis kelamin</td><td>Jenis kelamin biologis</td><td>Pilih Laki-laki atau Perempuan</td><td>-</td></tr>
+        <tr><td>Kategori BMI</td><td>Perbandingan berat dan tinggi badan</td><td>Hitung dengan penghitung di bawah</td><td>Normal, Overweight, Obese</td></tr>
+        <tr><td>Detak jantung</td><td>Denyut jantung saat Anda santai</td><td>Ukur saat istirahat, bukan setelah berolahraga. Bisa dari jam tangan pintar atau hitung denyut nadi selama 1 menit</td><td>40 sampai 200 kali per menit</td></tr>
+        <tr><td>Tekanan darah atas (sistolik)</td><td>Angka pertama hasil tensi</td><td>Pada hasil 120/80, isi 120</td><td>70 sampai 220</td></tr>
+        <tr><td>Tekanan darah bawah (diastolik)</td><td>Angka kedua hasil tensi</td><td>Pada hasil 120/80, isi 80</td><td>40 sampai 140</td></tr>
+        <tr><td>Durasi tidur</td><td>Rata-rata lama tidur per malam</td><td>Dalam jam, boleh desimal (6.5)</td><td>3 sampai 12 jam</td></tr>
+        <tr><td>Aktivitas fisik</td><td>Total waktu olahraga atau gerak aktif per hari</td><td>Dalam menit. Isi 0 jika tidak ada. Umumnya 30 sampai 90</td><td>0 sampai 300 menit</td></tr>
+        <tr><td>Tingkat stres</td><td>Seberapa tertekan Anda belakangan ini</td><td>1 = sangat santai, 5 = sedang, 10 = sangat tertekan</td><td>1 sampai 10</td></tr>
+        <tr><td>Langkah harian</td><td>Rata-rata langkah per hari</td><td>Lihat aplikasi kesehatan atau jam tangan pintar</td><td>0 sampai 50.000</td></tr>
+    </table>
+</section>
+
+<section>
+    <h2>Cara Menentukan Kategori BMI</h2>
+    <p>BMI dihitung dari <strong>berat badan (kg) dibagi tinggi badan (m) dikuadratkan</strong>. Contoh: 65 kg dan 165 cm menghasilkan 65 / (1,65 x 1,65) = 23,9.</p>
+    <table>
+        <tr><th>Hasil BMI</th><th>Pilih di form</th></tr>
+        <tr><td>Di bawah 25</td><td>Normal</td></tr>
+        <tr><td>25 sampai 29,9</td><td>Overweight</td></tr>
+        <tr><td>30 ke atas</td><td>Obese</td></tr>
+    </table>
+    <p class="hint">Data latih hanya punya tiga kategori di atas, jadi BMI di bawah 18,5 tetap dipilih sebagai Normal.</p>
+
+    <div class="card" style="margin-top:12px;">
+        <h3>Penghitung BMI</h3>
+        <div class="form-grid">
+            <div class="field">
+                <label for="bmi-berat">Berat badan (kg)</label>
+                <input type="number" id="bmi-berat" min="20" max="300" step="0.1" placeholder="65">
+            </div>
+            <div class="field">
+                <label for="bmi-tinggi">Tinggi badan (cm)</label>
+                <input type="number" id="bmi-tinggi" min="100" max="250" step="1" placeholder="165">
+            </div>
+        </div>
+        <button type="button" class="btn btn-small" id="bmi-hitung">Hitung</button>
+        <p id="bmi-hasil"></p>
+    </div>
+</section>
+
+<section>
+    <h2>Cara Membaca Hasil</h2>
+    <ul>
+        <li>Hasil berupa salah satu dari <strong>None</strong> (tidak terdeteksi gangguan), <strong>Insomnia</strong>, atau <strong>Sleep Apnea</strong>.</li>
+        <li>Persentase menunjukkan seberapa besar kemiripan data Anda dengan data pada tiap kelas. Makin tinggi, makin mirip.</li>
+        <li>Semua hasil adalah perkiraan dari pola data, bukan kepastian.</li>
+    </ul>
+</section>
+
+<section class="notice">
+    <h2>Penting</h2>
+    <p>SleepCheck adalah alat screening awal dan <strong>bukan pengganti diagnosis dokter</strong>. Jika Anda sering sulit tidur atau mengalami gejala yang mengganggu, konsultasikan dengan tenaga kesehatan.</p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('bmi-hitung').addEventListener('click', function () {
+    var kg = parseFloat(document.getElementById('bmi-berat').value);
+    var cm = parseFloat(document.getElementById('bmi-tinggi').value);
+    var hasil = document.getElementById('bmi-hasil');
+    if (!kg || !cm) { hasil.textContent = 'Isi berat dan tinggi badan dulu.'; return; }
+    var m = cm / 100;
+    var bmi = kg / (m * m);
+    var kategori = bmi >= 30 ? 'Obese' : (bmi >= 25 ? 'Overweight' : 'Normal');
+    hasil.textContent = 'BMI Anda ' + bmi.toFixed(1).replace('.', ',') + ', pilih kategori: ' + kategori + '.';
+});
+</script>
+{% endblock %}

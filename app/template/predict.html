@@ -8,204 +8,124 @@
 
     <h1>Prediksi Gangguan Tidur</h1>
 
+    <p class="hint">
+        Semua kolom wajib diisi. Bingung cara mengisi? Lihat
+        <a href="/panduan">panduan pengisian</a>.
+    </p>
+
     {% if errors %}
-
     <div class="error-box">
-
         <ul>
             {% for error in errors %}
             <li>{{ error }}</li>
             {% endfor %}
         </ul>
-
     </div>
-
     {% endif %}
 
+    <form id="predict-form" method="post" action="/predict">
 
-    <form
-        id="predict-form"
-        method="post"
-        action="/predict"
-    >
+        <h3 class="form-section">Data Diri</h3>
+        <div class="form-grid">
 
-        <label>Nama</label>
+            <div class="field field-full">
+                <label for="nama">Nama</label>
+                <input type="text" id="nama" name="nama" minlength="2" maxlength="100"
+                       placeholder="Budi" required value="{{ values.get('nama', '') }}">
+                <small class="hint">Boleh nama panggilan</small>
+            </div>
 
-        <input
-            type="text"
-            name="nama"
-            minlength="2"
-            maxlength="100"
-            required
-            value="{{ values.get('nama', '') }}"
-        >
+            <div class="field">
+                <label for="age">Umur</label>
+                <input type="number" id="age" name="age" min="10" max="100"
+                       placeholder="30" required value="{{ values.get('age', '') }}">
+                <small class="hint">Tahun</small>
+            </div>
 
+            <div class="field">
+                <label for="gender">Jenis kelamin</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Pilih</option>
+                    <option value="Male" {% if values.get('gender') == 'Male' %}selected{% endif %}>Laki-laki</option>
+                    <option value="Female" {% if values.get('gender') == 'Female' %}selected{% endif %}>Perempuan</option>
+                </select>
+            </div>
 
-        <label>Age</label>
+        </div>
 
-        <input
-            type="number"
-            name="age"
-            min="1"
-            max="100"
-            required
-            value="{{ values.get('age', '') }}"
-        >
+        <h3 class="form-section">Kondisi Tubuh</h3>
+        <div class="form-grid">
 
+            <div class="field">
+                <label for="bmi_category">Kategori BMI</label>
+                <select id="bmi_category" name="bmi_category" required>
+                    <option value="">Pilih</option>
+                    <option value="Normal" {% if values.get('bmi_category') == 'Normal' %}selected{% endif %}>Normal (di bawah 25)</option>
+                    <option value="Overweight" {% if values.get('bmi_category') == 'Overweight' %}selected{% endif %}>Overweight (25 - 29,9)</option>
+                    <option value="Obese" {% if values.get('bmi_category') == 'Obese' %}selected{% endif %}>Obese (30 ke atas)</option>
+                </select>
+                <small class="hint">Cara menghitung ada di panduan</small>
+            </div>
 
-        <label>Gender</label>
+            <div class="field">
+                <label for="heart_rate">Detak jantung</label>
+                <input type="number" id="heart_rate" name="heart_rate" min="40" max="200"
+                       placeholder="72" required value="{{ values.get('heart_rate', '') }}">
+                <small class="hint">Kali per menit, saat istirahat</small>
+            </div>
 
-        <select name="gender" required>
+            <div class="field">
+                <label for="systolic">Tekanan darah atas</label>
+                <input type="number" id="systolic" name="systolic" min="70" max="220"
+                       placeholder="120" required value="{{ values.get('systolic', '') }}">
+                <small class="hint">Pada 120/80, isi 120</small>
+            </div>
 
-            <option value="">
-                Pilih Gender
-            </option>
+            <div class="field">
+                <label for="diastolic">Tekanan darah bawah</label>
+                <input type="number" id="diastolic" name="diastolic" min="40" max="140"
+                       placeholder="80" required value="{{ values.get('diastolic', '') }}">
+                <small class="hint">Pada 120/80, isi 80</small>
+            </div>
 
-            <option value="Male"
-                {% if values.get('gender') == 'Male' %}
-                selected
-                {% endif %}
-            >
-                Male
-            </option>
+        </div>
 
-            <option value="Female"
-                {% if values.get('gender') == 'Female' %}
-                selected
-                {% endif %}
-            >
-                Female
-            </option>
+        <h3 class="form-section">Kebiasaan Harian</h3>
+        <div class="form-grid">
 
-        </select>
+            <div class="field">
+                <label for="sleep_duration">Durasi tidur</label>
+                <input type="number" id="sleep_duration" name="sleep_duration" min="3" max="12" step="0.1"
+                       placeholder="7" required value="{{ values.get('sleep_duration', '') }}">
+                <small class="hint">Jam per malam</small>
+            </div>
 
+            <div class="field">
+                <label for="physical_activity">Aktivitas fisik</label>
+                <input type="number" id="physical_activity" name="physical_activity" min="0" max="300"
+                       placeholder="60" required value="{{ values.get('physical_activity', '') }}">
+                <small class="hint">Menit per hari, isi 0 jika tidak ada</small>
+            </div>
 
-        <label>BMI Category</label>
+            <div class="field">
+                <label for="stress_level">Tingkat stres</label>
+                <input type="number" id="stress_level" name="stress_level" min="1" max="10"
+                       placeholder="5" required value="{{ values.get('stress_level', '') }}">
+                <small class="hint">1 = santai, 10 = sangat tertekan</small>
+            </div>
 
-        <select name="bmi_category" required>
+            <div class="field">
+                <label for="daily_steps">Langkah harian</label>
+                <input type="number" id="daily_steps" name="daily_steps" min="0" max="50000"
+                       placeholder="7000" required value="{{ values.get('daily_steps', '') }}">
+                <small class="hint">Langkah per hari</small>
+            </div>
 
-            <option value="">
-                Pilih BMI
-            </option>
+        </div>
 
-            <option value="Normal"
-                {% if values.get('bmi_category') == 'Normal' %}
-                selected
-                {% endif %}
-            >
-                Normal
-            </option>
+        <button type="submit" id="submit-button">Lihat Hasil Prediksi</button>
 
-            <option value="Overweight"
-                {% if values.get('bmi_category') == 'Overweight' %}
-                selected
-                {% endif %}
-            >
-                Overweight
-            </option>
-
-            <option value="Obese"
-                {% if values.get('bmi_category') == 'Obese' %}
-                selected
-                {% endif %}
-            >
-                Obese
-            </option>
-
-        </select>
-
-
-        <label>Sleep Duration (jam)</label>
-
-        <input
-            type="number"
-            name="sleep_duration"
-            min="1"
-            max="24"
-            step="0.1"
-            required
-            value="{{ values.get('sleep_duration', '') }}"
-        >
-
-
-        <label>Physical Activity (menit/hari)</label>
-
-        <input
-            type="number"
-            name="physical_activity"
-            min="0"
-            max="500"
-            required
-            value="{{ values.get('physical_activity', '') }}"
-        >
-
-
-        <label>Stress Level</label>
-
-        <input
-            type="number"
-            name="stress_level"
-            min="1"
-            max="10"
-            required
-            value="{{ values.get('stress_level', '') }}"
-        >
-
-
-        <label>Heart Rate</label>
-
-        <input
-            type="number"
-            name="heart_rate"
-            min="30"
-            max="220"
-            required
-            value="{{ values.get('heart_rate', '') }}"
-        >
-
-
-        <label>Daily Steps</label>
-
-        <input
-            type="number"
-            name="daily_steps"
-            min="0"
-            max="100000"
-            required
-            value="{{ values.get('daily_steps', '') }}"
-        >
-
-
-        <label>Systolic</label>
-
-        <input
-            type="number"
-            name="systolic"
-            min="60"
-            max="250"
-            required
-            value="{{ values.get('systolic', '') }}"
-        >
-
-
-        <label>Diastolic</label>
-
-        <input
-            type="number"
-            name="diastolic"
-            min="30"
-            max="150"
-            required
-            value="{{ values.get('diastolic', '') }}"
-        >
-
-
-        <button
-            type="submit"
-            id="submit-button"
-        >
-            Prediksi
-        </button>
+        <small class="hint">Hasil adalah screening awal, bukan diagnosis medis.</small>
 
     </form>
 

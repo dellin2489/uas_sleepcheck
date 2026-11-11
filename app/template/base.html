@@ -17,6 +17,7 @@
                 <a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>Home</a>
                 <a href="/predict" {% if request.url.path == '/predict' %}class="active"{% endif %}>Prediksi</a>
                 <a href="/history" {% if request.url.path.startswith('/history') %}class="active"{% endif %}>Riwayat</a>
+                <a href="/panduan" {% if request.url.path == '/panduan' %}class="active"{% endif %}>Panduan</a>
                 <a href="/contact" {% if request.url.path == '/contact' %}class="active"{% endif %}>Contact Us</a>
             </nav>
         </div>

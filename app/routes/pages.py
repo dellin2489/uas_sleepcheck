@@ -13,3 +13,7 @@ def home(request: Request):
 @router.get("/contact")
 def contact(request: Request):
     return templates.TemplateResponse(request, "contact.html")
+
+@router.get("/panduan")
+def panduan(request: Request):
+    return templates.TemplateResponse(request, "panduan.html")

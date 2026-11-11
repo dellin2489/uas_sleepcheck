@@ -605,3 +605,15 @@ li {
         overflow-x: auto;
     }
 }
+/* Form tertata dua kolom */
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 16px; }
+.field-full { grid-column: 1 / -1; }
+.form-section { margin: 22px 0 10px; font-size: 1rem; color: var(--primary-dark); padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.form-section:first-of-type { margin-top: 8px; }
+
+/* Petunjuk abu-abu tipis di bawah kolom */
+.hint { display: block; margin: 4px 0 14px; color: #8a93a3; font-size: 0.8rem; line-height: 1.3; }
+
+@media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+}
