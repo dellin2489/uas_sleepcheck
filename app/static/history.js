@@ -1,15 +1,15 @@
 // Konfirmasi sebelum menghapus data
 document.querySelectorAll(".form-hapus").forEach(function (form) {
   form.addEventListener("submit", function (e) {
-    var nama = form.dataset.nama || "ini";
-    if (!confirm('Yakin ingin menghapus data "' + nama + '"?')) {
+    var tanggal = form.dataset.tanggal || "ini";
+    if (!confirm('Yakin ingin menghapus riwayat tanggal "' + tanggal + '"?')) {
       e.preventDefault();
     }
   });
 });
 
-// Pencarian nama (nilai tambah)
-var inputCari = document.getElementById("cari-nama");
+// Pencarian tanggal
+var inputCari = document.getElementById("cari-tanggal");
 if (inputCari) {
   var jumlah = document.getElementById("jumlah-data");
   var kosong = document.getElementById("tidak-ditemukan");
@@ -19,8 +19,8 @@ if (inputCari) {
     var kata = inputCari.value.trim().toLowerCase();
     var tampil = 0;
     baris.forEach(function (row) {
-      var nama = row.querySelector(".kolom-nama").textContent.toLowerCase();
-      var cocok = nama.includes(kata);
+      var tanggal = row.querySelector(".kolom-tanggal").textContent.toLowerCase();
+      var cocok = tanggal.includes(kata);
       row.style.display = cocok ? "" : "none";
       if (cocok) tampil++;
     });

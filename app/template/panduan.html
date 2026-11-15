@@ -2,80 +2,194 @@
 {% block title %}Panduan Pengisian - SleepCheck{% endblock %}
 
 {% block content %}
-<section>
-    <h1>Panduan Pengisian</h1>
-    <p>Halaman ini menjelaskan arti tiap kolom di form prediksi dan cara mengisinya, supaya hasil prediksi lebih sesuai dengan kondisi Anda.</p>
-    <a class="btn" href="/predict">Langsung ke Form Prediksi</a>
-</section>
+<div class="guide-header">
+    <div>
+        <h1>Panduan Pengisian</h1>
+        <p class="muted" style="font-size: 1.05rem;">Pahami arti tiap metrik kesehatan di formulir prediksi agar hasil analisis AI lebih akurat dan sesuai kondisi Anda.</p>
+    </div>
+    <a class="btn btn-predict" href="/predict" style="max-width: fit-content; padding: 11px 22px;">
+        <span>Ke Form Prediksi</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+        </svg>
+    </a>
+</div>
 
-<section>
-    <h2>Sebelum Mulai</h2>
-    <ul>
-        <li>Semua kolom wajib diisi.</li>
-        <li>Untuk kebiasaan harian (tidur, aktivitas, langkah, stres), isi dengan <strong>rata-rata seminggu terakhir</strong>, bukan satu hari yang tidak biasa.</li>
-        <li>Untuk angka desimal gunakan titik, misalnya <strong>6.5</strong> jam.</li>
-        <li>Isi angka yang sebenarnya. Angka yang terlalu jauh dari kenyataan membuat hasil tidak berarti.</li>
+<section class="card" style="margin-top: 24px;">
+    <h3 style="margin-bottom: 12px;">Sebelum Mulai</h3>
+    <ul class="guide-list">
+        <li><strong>Wajib diisi semua:</strong> Pastikan tidak ada kolom yang terlewat agar model AI dapat memproses seluruh fitur.</li>
+        <li><strong>Gunakan rata-rata mingguan:</strong> Untuk kebiasaan harian (tidur, aktivitas, langkah, stres), isi dengan <strong>rata-rata seminggu terakhir</strong>, bukan kondisi satu hari yang ekstrem.</li>
+        <li><strong>Format desimal:</strong> Gunakan tanda titik untuk angka desimal, misalnya <code>6.5</code> jam.</li>
+        <li><strong>Isi sesuai kenyataan:</strong> Input yang jauh dari kondisi asli akan menghasilkan klasifikasi yang tidak relevan.</li>
     </ul>
 </section>
 
 <section>
     <h2>Penjelasan Tiap Kolom</h2>
-    <table>
-        <tr><th>Kolom</th><th>Artinya</th><th>Cara mengisi</th><th>Rentang</th></tr>
-        <tr><td>Nama</td><td>Penanda data Anda di halaman Riwayat</td><td>Boleh nama panggilan</td><td>2 sampai 100 karakter</td></tr>
-        <tr><td>Umur</td><td>Usia Anda saat ini</td><td>Dalam tahun</td><td>10 sampai 100</td></tr>
-        <tr><td>Jenis kelamin</td><td>Jenis kelamin biologis</td><td>Pilih Laki-laki atau Perempuan</td><td>-</td></tr>
-        <tr><td>Kategori BMI</td><td>Perbandingan berat dan tinggi badan</td><td>Hitung dengan penghitung di bawah</td><td>Normal, Overweight, Obese</td></tr>
-        <tr><td>Detak jantung</td><td>Denyut jantung saat Anda santai</td><td>Ukur saat istirahat, bukan setelah berolahraga. Bisa dari jam tangan pintar atau hitung denyut nadi selama 1 menit</td><td>40 sampai 200 kali per menit</td></tr>
-        <tr><td>Tekanan darah atas (sistolik)</td><td>Angka pertama hasil tensi</td><td>Pada hasil 120/80, isi 120</td><td>70 sampai 220</td></tr>
-        <tr><td>Tekanan darah bawah (diastolik)</td><td>Angka kedua hasil tensi</td><td>Pada hasil 120/80, isi 80</td><td>40 sampai 140</td></tr>
-        <tr><td>Durasi tidur</td><td>Rata-rata lama tidur per malam</td><td>Dalam jam, boleh desimal (6.5)</td><td>3 sampai 12 jam</td></tr>
-        <tr><td>Aktivitas fisik</td><td>Total waktu olahraga atau gerak aktif per hari</td><td>Dalam menit. Isi 0 jika tidak ada. Umumnya 30 sampai 90</td><td>0 sampai 300 menit</td></tr>
-        <tr><td>Tingkat stres</td><td>Seberapa tertekan Anda belakangan ini</td><td>1 = sangat santai, 5 = sedang, 10 = sangat tertekan</td><td>1 sampai 10</td></tr>
-        <tr><td>Langkah harian</td><td>Rata-rata langkah per hari</td><td>Lihat aplikasi kesehatan atau jam tangan pintar</td><td>0 sampai 50.000</td></tr>
-    </table>
-</section>
-
-<section>
-    <h2>Cara Menentukan Kategori BMI</h2>
-    <p>BMI dihitung dari <strong>berat badan (kg) dibagi tinggi badan (m) dikuadratkan</strong>. Contoh: 65 kg dan 165 cm menghasilkan 65 / (1,65 x 1,65) = 23,9.</p>
-    <table>
-        <tr><th>Hasil BMI</th><th>Pilih di form</th></tr>
-        <tr><td>Di bawah 25</td><td>Normal</td></tr>
-        <tr><td>25 sampai 29,9</td><td>Overweight</td></tr>
-        <tr><td>30 ke atas</td><td>Obese</td></tr>
-    </table>
-    <p class="hint">Data latih hanya punya tiga kategori di atas, jadi BMI di bawah 18,5 tetap dipilih sebagai Normal.</p>
-
-    <div class="card" style="margin-top:12px;">
-        <h3>Penghitung BMI</h3>
-        <div class="form-grid">
-            <div class="field">
-                <label for="bmi-berat">Berat badan (kg)</label>
-                <input type="number" id="bmi-berat" min="20" max="300" step="0.1" placeholder="65">
-            </div>
-            <div class="field">
-                <label for="bmi-tinggi">Tinggi badan (cm)</label>
-                <input type="number" id="bmi-tinggi" min="100" max="250" step="1" placeholder="165">
-            </div>
-        </div>
-        <button type="button" class="btn btn-small" id="bmi-hitung">Hitung</button>
-        <p id="bmi-hasil"></p>
+    <p class="muted" style="margin-bottom: 16px;">Referensi lengkap parameter input beserta rentang nilai yang valid pada sistem:</p>
+    
+    <div class="table-wrap">
+        <table class="guide-table">
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Nama Kolom</th>
+                    <th style="width: 28%;">Arti Metrik</th>
+                    <th style="width: 32%;">Cara Mengisi</th>
+                    <th style="width: 18%;">Rentang Valid</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="kolom-nama">Nama</td>
+                    <td>Penanda identitas data Anda di halaman Riwayat</td>
+                    <td>Boleh menggunakan nama panggilan</td>
+                    <td><span class="range-pill">2 – 100 huruf</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Umur</td>
+                    <td>Usia Anda saat ini</td>
+                    <td>Isi angka usia dalam satuan tahun</td>
+                    <td><span class="range-pill">10 – 100 thn</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Jenis Kelamin</td>
+                    <td>Jenis kelamin biologis</td>
+                    <td>Pilih Laki-laki atau Perempuan</td>
+                    <td><span class="range-pill">2 pilihan</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Kategori BMI</td>
+                    <td>Indeks perbandingan berat dan tinggi badan</td>
+                    <td>Gunakan kalkulator BMI di bagian bawah halaman ini</td>
+                    <td><span class="range-pill">Normal / Over / Obese</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Detak Jantung</td>
+                    <td>Denyut jantung saat kondisi tubuh santai</td>
+                    <td>Ukur saat istirahat (bukan habis olahraga) via <em>smartwatch</em> atau hitung nadi 1 menit</td>
+                    <td><span class="range-pill">40 – 200 bpm</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Tekanan Darah Atas (Sistolik)</td>
+                    <td>Angka pertama pada hasil pengukuran tensi</td>
+                    <td>Contoh: pada hasil <strong>120</strong>/80, isi angka <strong>120</strong></td>
+                    <td><span class="range-pill">70 – 220 mmHg</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Tekanan Darah Bawah (Diastolik)</td>
+                    <td>Angka kedua pada hasil pengukuran tensi</td>
+                    <td>Contoh: pada hasil 120/<strong>80</strong>, isi angka <strong>80</strong></td>
+                    <td><span class="range-pill">40 – 140 mmHg</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Durasi Tidur</td>
+                    <td>Rata-rata total waktu tidur per malam</td>
+                    <td>Dalam satuan jam, boleh desimal (contoh: <code>6.5</code>)</td>
+                    <td><span class="range-pill">3 – 12 jam</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Aktivitas Fisik</td>
+                    <td>Total durasi olahraga atau gerak aktif harian</td>
+                    <td>Dalam menit. Isi <code>0</code> jika tidak berolahraga (umumnya 30–90 menit)</td>
+                    <td><span class="range-pill">0 – 300 menit</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Tingkat Stres</td>
+                    <td>Skala subjektif tekanan mental belakangan ini</td>
+                    <td><code>1</code> = sangat santai, <code>5</code> = sedang, <code>10</code> = sangat tertekan</td>
+                    <td><span class="range-pill">Skala 1 – 10</span></td>
+                </tr>
+                <tr>
+                    <td class="kolom-nama">Langkah Harian</td>
+                    <td>Rata-rata jumlah langkah kaki per hari</td>
+                    <td>Cek melalui aplikasi kesehatan di ponsel atau jam tangan pintar</td>
+                    <td><span class="range-pill">0 – 50.000</span></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </section>
 
 <section>
-    <h2>Cara Membaca Hasil</h2>
-    <ul>
-        <li>Hasil berupa salah satu dari <strong>None</strong> (tidak terdeteksi gangguan), <strong>Insomnia</strong>, atau <strong>Sleep Apnea</strong>.</li>
-        <li>Persentase menunjukkan seberapa besar kemiripan data Anda dengan data pada tiap kelas. Makin tinggi, makin mirip.</li>
-        <li>Semua hasil adalah perkiraan dari pola data, bukan kepastian.</li>
-    </ul>
+    <h2>Cara Menentukan Kategori BMI</h2>
+    <p>BMI dihitung dari <strong>berat badan (kg) dibagi tinggi badan (m) dikuadratkan</strong>. Contoh: berat 65 kg dan tinggi 165 cm menghasilkan <code>65 / (1,65 × 1,65) = 23,9</code>.</p>
+    
+    <div class="grid grid-2" style="align-items: start; margin-top: 20px;">
+        <div>
+            <div class="table-wrap" style="margin-top: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rentang Skor BMI</th>
+                            <th>Pilihan Kategori di Form</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Di bawah 25,0</td>
+                            <td><span class="badge badge-normal">Normal</span></td>
+                        </tr>
+                        <tr>
+                            <td>25,0 sampai 29,9</td>
+                            <td><span class="badge badge-insomnia">Overweight</span></td>
+                        </tr>
+                        <tr>
+                            <td>30,0 ke atas</td>
+                            <td><span class="badge badge-sleep-apnea">Obese</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="hint">Catatan: Dataset latih hanya mengelompokkan tiga kategori di atas, sehingga BMI di bawah 18,5 tetap dimasukkan ke kategori <strong>Normal</strong>.</p>
+        </div>
+
+        <div class="card">
+            <h3>Kalkulator Cepat BMI</h3>
+            <p class="muted" style="font-size: 0.85rem; margin-bottom: 16px;">Masukkan berat dan tinggi badan untuk mengetahui kategori Anda secara otomatis.</p>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="bmi-berat">Berat badan (kg)</label>
+                    <input type="number" id="bmi-berat" min="20" max="300" step="0.1" placeholder="65">
+                </div>
+                <div class="field">
+                    <label for="bmi-tinggi">Tinggi badan (cm)</label>
+                    <input type="number" id="bmi-tinggi" min="100" max="250" step="1" placeholder="165">
+                </div>
+            </div>
+            <button type="button" class="btn btn-small" id="bmi-hitung" style="margin-top: 12px;">Hitung Kategori BMI</button>
+            <div id="bmi-hasil-box" class="bmi-result-box" style="display: none;">
+                <p id="bmi-hasil"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Cara Membaca Hasil Prediksi</h2>
+    <div class="grid grid-3">
+        <div class="card">
+            <span class="badge badge-none" style="margin-bottom: 10px;">None</span>
+            <h3>Tidak Ada Gangguan</h3>
+            <p class="muted">Pola tidur dan metrik gaya hidup Anda selaras dengan kelompok individu tanpa indikasi gangguan tidur.</p>
+        </div>
+        <div class="card">
+            <span class="badge badge-insomnia" style="margin-bottom: 10px;">Insomnia</span>
+            <h3>Indikasi Insomnia</h3>
+            <p class="muted">Pola metrik Anda mendekati kelompok yang mengalami kesulitan memulai atau mempertahankan kualitas tidur.</p>
+        </div>
+        <div class="card">
+            <span class="badge badge-sleep-apnea" style="margin-bottom: 10px;">Sleep Apnea</span>
+            <h3>Indikasi Sleep Apnea</h3>
+            <p class="muted">Pola metrik (seperti tekanan darah, BMI, atau detak jantung) memiliki kemiripan dengan kelompok risiko gangguan pernapasan saat tidur.</p>
+        </div>
+    </div>
 </section>
 
 <section class="notice">
-    <h2>Penting</h2>
-    <p>SleepCheck adalah alat screening awal dan <strong>bukan pengganti diagnosis dokter</strong>. Jika Anda sering sulit tidur atau mengalami gejala yang mengganggu, konsultasikan dengan tenaga kesehatan.</p>
+    <h2>Penting untuk Diperhatikan</h2>
+    <p>SleepCheck adalah alat <em>screening</em> awal berbasis pola data dan <strong>bukan pengganti diagnosis medis dokter</strong>. Jika Anda sering mengalami gangguan tidur atau keluhan fisik yang mengganggu aktivitas, segera konsultasikan dengan tenaga kesehatan profesional.</p>
 </section>
 {% endblock %}
 
@@ -84,12 +198,18 @@
 document.getElementById('bmi-hitung').addEventListener('click', function () {
     var kg = parseFloat(document.getElementById('bmi-berat').value);
     var cm = parseFloat(document.getElementById('bmi-tinggi').value);
+    var box = document.getElementById('bmi-hasil-box');
     var hasil = document.getElementById('bmi-hasil');
-    if (!kg || !cm) { hasil.textContent = 'Isi berat dan tinggi badan dulu.'; return; }
+    
+    box.style.display = 'block';
+    if (!kg || !cm) { 
+        hasil.innerHTML = 'Silakan isi berat dan tinggi badan terlebih dahulu.'; 
+        return; 
+    }
     var m = cm / 100;
     var bmi = kg / (m * m);
     var kategori = bmi >= 30 ? 'Obese' : (bmi >= 25 ? 'Overweight' : 'Normal');
-    hasil.textContent = 'BMI Anda ' + bmi.toFixed(1).replace('.', ',') + ', pilih kategori: ' + kategori + '.';
+    hasil.innerHTML = 'Skor BMI Anda: <strong>' + bmi.toFixed(1).replace('.', ',') + '</strong> &rarr; Pilih kategori: <strong>' + kategori + '</strong>';
 });
 </script>
 {% endblock %}
