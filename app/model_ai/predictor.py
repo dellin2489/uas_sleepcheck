@@ -3,7 +3,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-MODEL_PATH = Path(__file__).resolve().parent / "knn_sleep_A_semua_fitur.joblib"
+MODEL_PATH = Path(__file__).resolve().parent / "knn_sleep_model.joblib"
 _knn = joblib.load(MODEL_PATH)
 
 

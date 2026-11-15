@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Model AI - SleepCheck{% endblock %}
+
+{% block content %}
+
+{% if not meta %}
+<section class="notice">
+    <h1>Model AI</h1>
+    <p>Data laporan model belum dibuat. Jalankan <code>python ml/build_model_report.py</code> dari folder utama proyek, lalu muat ulang halaman ini.</p>
+</section>
+{% else %}
+
+{% set tm = meta.test_metrics %}
+{% set trm = meta.train_metrics %}
+{% set bm = meta.baseline_metrics %}
+{% set sa = meta.sleep_analysis %}
+{% set total = meta.dataset.rows_clean %}
+{% set benar = (tm.accuracy * meta.test_rows)|round|int %}
+
+<section>
+    <h1>Model K-Nearest Neighbors (KNN)</h1>
+    <p>Target latihan adalah <code>Sleep Disorder</code> dengan tiga kelas: <strong>None</strong>, <strong>Insomnia</strong>, dan <strong>Sleep Apnea</strong>. Data dibagi menjadi {{ meta.train_rows }} baris latih dan {{ meta.test_rows }} baris uji, dengan proporsi kelas yang dijaga sama (stratified). Model ini yang dipakai di halaman Prediksi.</p>
+
+    <!-- ======================================================== -->
+    <!-- 1. METRIK EVALUASI -->
+    <!-- ======================================================== -->
+    <h2>Performa Model (Metrik Klasifikasi)</h2>
+    <p>Karena target berupa kategori (klasifikasi), kita memakai akurasi, precision, recall, F1-score, dan confusion matrix. <em>(MAE dan R&sup2; tidak dipakai karena itu metrik regresi.)</em> Kelasnya tidak seimbang, jadi F1 dihitung rata-rata antarkelas (macro) supaya kelas kecil tetap diperhitungkan.</p>
+
+    <div class="info-grid">
+        <div class="info-box" style="border-top-color: var(--primary);">
+            <div class="metric-value" style="color: var(--primary);">{{ "%.1f"|format(tm.accuracy * 100) }}%</div>
+            <p class="metric-title">Akurasi (Data Uji)</p>
+            <small>{{ benar }} dari {{ meta.test_rows }} data uji ditebak dengan benar.</small>
+        </div>
+        <div class="info-box" style="border-top-color: #2f9e6b;">
+            <div class="metric-value" style="color: #2f9e6b;">{{ "%.2f"|format(tm.f1) }}</div>
+            <p class="metric-title">F1-macro (Data Uji)</p>
+            <small>Rata-rata F1 ketiga kelas dengan bobot sama.</small>
+        </div>
+        <div class="info-box" style="border-top-color: #ea580c;">
+            <div class="metric-value" style="color: #ea580c;">{{ "%.2f"|format(meta.nested_cv.mean) }}</div>
+            <p class="metric-title">F1-macro Nested CV</p>
+            <small>Rata-rata {{ "%.2f"|format(meta.nested_cv.mean) }} dengan simpangan {{ "%.2f"|format(meta.nested_cv.std) }} dari 15 percobaan validasi silang bersarang. Ini acuan utama karena data uji hanya {{ meta.test_rows }} baris.</small>
+        </div>
+        <div class="info-box" style="border-top-color: var(--muted);">
+            <div class="metric-value" style="color: var(--muted);">{{ "%.1f"|format(bm.accuracy * 100) }}%</div>
+            <p class="metric-title">Akurasi Baseline</p>
+            <small>Pembanding sederhana yang selalu menebak kelas terbanyak (None). Model harus mengalahkan angka ini.</small>
+        </div>
+    </div>
+
+    <h3>Perbandingan Detail (Train vs Test vs Baseline)</h3>
+    <div class="table-wrapper"><table>
+        <thead>
+            <tr><th>Dataset / Model</th><th>Akurasi</th><th>Precision (macro)</th><th>Recall (macro)</th><th>F1 (macro)</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Training (KNN)</td>
+                <td>{{ "%.4f"|format(trm.accuracy) }}</td>
+                <td>{{ "%.4f"|format(trm.precision) }}</td>
+                <td>{{ "%.4f"|format(trm.recall) }}</td>
+                <td>{{ "%.4f"|format(trm.f1) }}</td>
+            </tr>
+            <tr class="best-trial">
+                <td>Testing (KNN) <span class="tag">Terpakai di Web</span></td>
+                <td>{{ "%.4f"|format(tm.accuracy) }}</td>
+                <td>{{ "%.4f"|format(tm.precision) }}</td>
+                <td>{{ "%.4f"|format(tm.recall) }}</td>
+                <td>{{ "%.4f"|format(tm.f1) }}</td>
+            </tr>
+            <tr>
+                <td>Baseline (DummyClassifier)</td>
+                <td>{{ "%.4f"|format(bm.accuracy) }}</td>
+                <td>{{ "%.4f"|format(bm.precision) }}</td>
+                <td>{{ "%.4f"|format(bm.recall) }}</td>
+                <td>{{ "%.4f"|format(bm.f1) }}</td>
+            </tr>
+        </tbody>
+    </table></div>
+
+    <h3>Hasil per Kelas (Data Uji)</h3>
+    <div class="table-wrapper"><table>
+        <thead>
+            <tr><th>Kelas</th><th>Precision</th><th>Recall</th><th>F1</th><th>Jumlah data uji</th></tr>
+        </thead>
+        <tbody>
+            {% for label, m in meta.report.items() %}
+            <tr>
+                <td>{{ label }}</td>
+                <td>{{ "%.4f"|format(m.precision) }}</td>
+                <td>{{ "%.4f"|format(m.recall) }}</td>
+                <td>{{ "%.4f"|format(m.f1) }}</td>
+                <td>{{ m.support }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table></div>
+
+    <p class="muted-note">
+        * <strong>F1-macro Cross-Validation (5-Fold, saat tuning):</strong> {{ "%.4f"|format(meta.cv_f1) }}.
+        Selisih akurasi training dan uji adalah {{ "%.1f"|format((trm.accuracy - tm.accuracy) * 100) }} poin persen.
+        Dengan data sekecil ini (hanya {{ total }} baris setelah duplikat dibuang), angka pada {{ meta.test_rows }} data uji mudah naik-turun, sehingga hasil nested CV lebih layak dijadikan patokan.
+    </p>
+
+    <!-- ======================================================== -->
+    <!-- 2. ALUR SISTEM -->
+    <!-- ======================================================== -->
+    <h2>Alur Sistem (Input &rarr; Output)</h2>
+    <p>Gambaran perjalanan data dari yang diisi pengguna di website hingga menjadi prediksi.</p>
+
+    <div class="flow">
+        <div class="info-box flow-step" style="border-top-color: var(--primary);">
+            <h4>1. Input User</h4>
+            <p>Form 10 kolom: umur, gender, BMI, durasi tidur, aktivitas, stres, detak jantung, langkah, dan tekanan darah.</p>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="info-box flow-step" style="border-top-color: #8b5cf6;">
+            <h4>2. Preprocessing</h4>
+            <p>Angka diseragamkan skalanya (StandardScaler), teks diubah jadi angka (One-Hot Encoding).</p>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="info-box flow-step" style="border-top-color: #f59e0b;">
+            <h4>3. Cari Tetangga</h4>
+            <p>KNN mencari {{ meta.best_params.n_neighbors }} data latih paling mirip, jarak {{ meta.best_params.metric }}.</p>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="info-box flow-step" style="border-top-color: #2f9e6b;">
+            <h4>4. Voting</h4>
+            <p>Kelas yang paling banyak di antara tetangga menjadi prediksi, proporsinya menjadi persentase keyakinan.</p>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="info-box flow-step" style="border-top-color: var(--primary); background: #eef7f8;">
+            <h4>5. Output</h4>
+            <p>Label dan persentase tampil di layar, lalu disimpan ke database untuk halaman Riwayat.</p>
+        </div>
+    </div>
+
+    <div class="detail-box">
+        <h3>Bagaimana Data Diproses?</h3>
+        <ul>
+            <li><strong>Input &amp; Validasi:</strong> Pengguna mengisi form. Server memeriksa tipe dan batas nilai tiap kolom (Pydantic) sebelum data dipakai.</li>
+            <li><strong>Otomatisasi Pipeline:</strong> Data masuk ke file model <code>.joblib</code> yang berisi pipeline utuh. Pengubahan skala dan pengkodean teks dilakukan otomatis di dalamnya, dengan aturan yang sama seperti saat pelatihan.</li>
+            <li><strong>Prediksi:</strong> KNN tidak memiliki rumus. Ia membandingkan data pengguna dengan {{ meta.train_rows }} data latih dan mengambil {{ meta.best_params.n_neighbors }} yang paling dekat. Karena berbasis jarak, skala fitur harus seragam.</li>
+            <li><strong>Persentase keyakinan:</strong> Dihitung dari proporsi tetangga di tiap kelas.{% if meta.best_params.weights == 'uniform' %} Dengan {{ meta.best_params.n_neighbors }} tetangga yang berbobot sama, nilainya berkelipat 1/{{ meta.best_params.n_neighbors }}, misalnya 6 dari {{ meta.best_params.n_neighbors }} tetangga berarti sekitar {{ "%.1f"|format(600 / meta.best_params.n_neighbors) }}%.{% endif %}</li>
+            <li><strong>Penyimpanan:</strong> Hasil dikembalikan ke web dan disimpan ke PostgreSQL agar muncul di halaman <em>Riwayat</em>.</li>
+        </ul>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 3. GRAFIK -->
+    <!-- ======================================================== -->
+    <h2>1. Pie Chart (Distribusi Kelas)</h2>
+    {% set n_none = meta.dataset.class_counts['None'] %}
+    <p>Proporsi tiap kelas pada {{ total }} data setelah duplikat dibuang. Kelas <strong>None</strong> berjumlah {{ n_none }} ({{ "%.1f"|format(n_none * 100 / total) }}%), sehingga dataset tidak seimbang. Itu sebabnya akurasi saja bisa menyesatkan dan F1-macro ikut dipakai.</p>
+    <img class="model-chart small" src="/static/model/pie_kelas.png" alt="Pie chart distribusi kelas">
+
+    <h2>2. Korelasi Antar Fitur (Heatmap)</h2>
+    <p>Matriks ini menunjukkan kekuatan hubungan antar fitur numerik. Nilai <strong>mendekati +1 (merah)</strong> berarti naik bersama, <strong>mendekati -1 (biru)</strong> berarti berlawanan arah, dan <strong>mendekati 0 (putih)</strong> berarti hampir tidak berhubungan. Contohnya, tekanan darah atas dan bawah sangat berkaitan (sekitar 0,97), dan tingkat stres berlawanan arah dengan durasi tidur (sekitar -0,83). Fitur yang saling berkaitan kuat bisa saling menggantikan, dan KNN menghitung keduanya sebagai jarak.</p>
+    <img class="model-chart" src="/static/model/korelasi.png" alt="Heatmap korelasi antar fitur">
+
+    <h2>3. Confusion Matrix (Data Uji)</h2>
+    <p>Baris adalah kelas aktual dan kolom adalah kelas prediksi. Angka di <strong>diagonal</strong> adalah tebakan yang benar, angka di luar diagonal adalah kesalahan. Dari sini terlihat kelas mana yang sering tertukar dengan kelas lain.</p>
+    <img class="model-chart small" src="/static/model/confusion_matrix.png" alt="Confusion matrix data uji">
+
+    <h2>4. Line Plot (Pengaruh Nilai k)</h2>
+    <p>F1-macro validasi silang untuk tiap jumlah tetangga (k). Garis putus-putus menandai k terpilih, yaitu <strong>{{ meta.best_params.n_neighbors }}</strong>. Jika k terlalu kecil, model terlalu peka pada data tunggal; jika terlalu besar, batas antarkelas jadi terlalu kasar.</p>
+    <img class="model-chart" src="/static/model/k_vs_f1.png" alt="Line plot pengaruh k terhadap F1-macro">
+
+    <h2>5. Boxplot (Durasi Tidur per Kelas)</h2>
+    <p>Sebaran durasi tidur pada tiap kelas. Garis tengah kotak adalah median. Rata-rata durasi tidur: None {{ sa.means['None'] }} jam, Insomnia {{ sa.means['Insomnia'] }} jam, Sleep Apnea {{ sa.means['Sleep Apnea'] }} jam. Kotak yang tumpang tindih menandakan fitur ini saja belum cukup memisahkan kelas.</p>
+    <img class="model-chart small" src="/static/model/boxplot_durasi.png" alt="Boxplot durasi tidur per kelas">
+
+    <!-- ======================================================== -->
+    <!-- 4. ANALISIS SLEEP DURATION -->
+    <!-- ======================================================== -->
+    <h2>Seberapa besar pengaruh durasi tidur?</h2>
+    {% set d = sa.dengan %}
+    {% set t = sa.tanpa %}
+    {% set selisih = d.cv_f1 - t.cv_f1 %}
+    <p>Perbedaan rata-rata durasi tidur antarkelas menjelaskan {{ "%.2f"|format(100 * sa.eta_squared) }}% variasi durasi tidur pada data bersih (&eta;&sup2;). Kedua model berikut dituning dengan grid, fold, dan pembagian data yang sama.</p>
+    <div class="table-wrapper"><table>
+        <thead>
+            <tr><th>Fitur</th><th>F1-macro CV</th><th>F1-macro uji</th><th>Akurasi uji</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Dengan durasi tidur</td>
+                <td>{{ "%.4f"|format(d.cv_f1) }}</td>
+                <td>{{ "%.4f"|format(d.test_f1) }}</td>
+                <td>{{ "%.4f"|format(d.test_accuracy) }}</td>
+            </tr>
+            <tr>
+                <td>Tanpa durasi tidur</td>
+                <td>{{ "%.4f"|format(t.cv_f1) }}</td>
+                <td>{{ "%.4f"|format(t.test_f1) }}</td>
+                <td>{{ "%.4f"|format(t.test_accuracy) }}</td>
+            </tr>
+        </tbody>
+    </table></div>
+    <p>Durasi tidur tetap digunakan di aplikasi.
+        {% if selisih|abs < 0.03 %}
+        Pada dataset ini selisih F1-macro validasi silangnya hanya {{ "%.4f"|format(selisih|abs) }}, jadi kedua model praktis setara dan perbedaannya belum bisa dianggap berarti.
+        {% elif selisih > 0 %}
+        Memasukkannya menaikkan F1-macro validasi silang sebesar {{ "%.4f"|format(selisih) }}.
+        {% else %}
+        Memasukkannya menurunkan F1-macro validasi silang sebesar {{ "%.4f"|format(selisih|abs) }}.
+        {% endif %}
+        Dengan data sekecil ini, selisih seperti itu perlu dibaca hati-hati.
+    </p>
+
+    <!-- ======================================================== -->
+    <!-- 5. TOP 5 PARAMETER -->
+    <!-- ======================================================== -->
+    <h2>5 percobaan parameter terbaik</h2>
+    <p>
+        Menampilkan 5 dari {{ meta.total_trials }} kombinasi GridSearchCV yang diuji.
+        Diurutkan berdasarkan F1-macro rata-rata 5-fold (semakin besar semakin baik).
+        <code>n_neighbors</code> adalah jumlah tetangga, <code>weights</code> menentukan apakah tetangga yang lebih dekat diberi bobot lebih,
+        dan <code>metric</code> adalah jenis jarak.
+    </p>
+
+    <div class="table-wrapper"><table>
+        <thead>
+            <tr>
+                <th>Percobaan</th><th>n_neighbors</th><th>weights</th><th>metric</th><th>F1-macro CV</th><th>Selisih vs Terbaik</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in meta.trials %}
+            <tr {% if loop.first %}class="best-trial"{% endif %}>
+                <td>{{ t.label }}{% if loop.first %} &#9733;{% endif %}</td>
+                <td>{{ t.n_neighbors }}</td>
+                <td>{{ t.weights }}</td>
+                <td>{{ t.metric }}</td>
+                <td>{{ "%.4f"|format(t.f1_cv) }}</td>
+                <td>{% if loop.first %}&mdash;{% else %}-{{ "%.4f"|format(t.delta) }}{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table></div>
+
+    <p class="detail-box">
+        <strong>Parameter terpilih:</strong>
+        n_neighbors = {{ meta.best_params.n_neighbors }},
+        weights = {{ meta.best_params.weights }},
+        metric = {{ meta.best_params.metric }}.
+        F1-macro CV model terbaik: <strong>{{ "%.4f"|format(meta.cv_f1) }}</strong>.
+    </p>
+</section>
+
+{% endif %}
+{% endblock %}

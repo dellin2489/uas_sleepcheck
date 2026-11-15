@@ -52,31 +52,11 @@
 
 <section>
     <h2>Informasi Model AI</h2>
-    <div class="grid grid-2">
-        <div class="card">
-            <h3>K-Nearest Neighbors (KNN)</h3>
-            <p><strong>Tugas:</strong> klasifikasi multikelas, memprediksi None, Insomnia, atau Sleep Apnea.</p>
-            <p><strong>Cara kerja:</strong> membandingkan data pengguna dengan sejumlah data paling mirip (tetangga terdekat) dan mengambil kelas yang paling banyak di antara mereka. Karena berbasis jarak, fitur angka diskalakan lebih dulu.</p>
-            <p><strong>Parameter terbaik:</strong> k = 7, jarak manhattan, bobot uniform (hasil GridSearchCV).</p>
-        </div>
-        <div class="card">
-            <h3>Evaluasi Model</h3>
-            <p><strong>Metode:</strong> nested cross-validation untuk angka utama, ditambah pengujian pada data uji terpisah.</p>
-            <p><strong>Hasil:</strong> F1-macro nested cross-validation sekitar 0,66 dan akurasi data uji sekitar 0,70.</p>
-            <p><strong>Metrik lain:</strong> precision, recall, dan F1 per kelas, serta confusion matrix.</p>
-        </div>
+    <div class="card">
+        <h3>K-Nearest Neighbors (KNN)</h3>
+        <p>Sistem memakai algoritma KNN untuk mengklasifikasikan pengguna ke salah satu dari tiga kelas: None, Insomnia, atau Sleep Apnea, berdasarkan kemiripan dengan data latih. Parameternya dituning dengan GridSearchCV dan dievaluasi dengan nested cross-validation.</p>
+        <p>Metrik evaluasi, alur sistem, grafik, dan analisis lengkap ada di halaman Model AI.</p>
+        <a class="btn" href="/model">Lihat Detail Model AI</a>
     </div>
-
-    <h3>Cara Membaca Hasil</h3>
-    <p>Selain label prediksi, sistem menampilkan persentase keyakinan untuk tiap kelas. Persentase ini berasal dari proporsi tetangga terdekat di tiap kelas. Semakin tinggi persentasenya, semakin banyak data mirip yang memiliki kelas tersebut.</p>
-</section>
-
-<section class="notice">
-    <h2>Keterbatasan dan Disclaimer</h2>
-    <ul>
-        <li>Data berukuran kecil, sehingga performa model berlaku untuk dataset ini dan belum tentu sama pada data dunia nyata. Kelas dengan data lebih sedikit lebih sulit diprediksi.</li>
-        <li>Hasil prediksi adalah perkiraan berdasarkan pola data, bukan kepastian.</li>
-        <li>SleepCheck adalah alat screening awal dan <strong>bukan pengganti diagnosis dokter</strong>. Konsultasikan dengan tenaga kesehatan jika mengalami gangguan tidur.</li>
-    </ul>
 </section>
 {% endblock %}
